@@ -2,6 +2,11 @@
 ## Titulo 2
 ### Titulo 3 
 #### Titulo 4 
-Texto em **negrito** e outra coisa
-Texto em *itálico*
-Texto em ***itálico e negrito***
+Texto em **negrito** e outra coisa.
+Texto em *itálico*.
+Texto em ***itálico e negrito***.
+Lista
+- item 1
+-item 2
+-item 3
+qualquer coisa

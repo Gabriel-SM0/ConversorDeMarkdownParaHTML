@@ -65,7 +65,7 @@ public class MarkdownToHtmlConverter implements TextConverter {
 
         if (texto.contains("**")) {
 
-            texto = texto.replace("**", "<strong>") + "<br>";
+            texto = texto.replace("**", "<strong>");
         }
         return texto;
 
@@ -76,7 +76,7 @@ public class MarkdownToHtmlConverter implements TextConverter {
     public String conversorItalico(String texto) {
 
         if (texto.contains("*")) {
-            texto = texto.replace("*", "<em>") + "<br>";
+            texto = texto.replace("*", "<em>");
 
         }
         return texto;
@@ -89,7 +89,7 @@ public class MarkdownToHtmlConverter implements TextConverter {
 
 
         if (texto.contains("***")) {
-            texto = texto.replace("***", "<em><strong>") + "<br>";
+            texto = texto.replace("***", "<em><strong>");
         }
         return texto;
 
@@ -99,8 +99,16 @@ public class MarkdownToHtmlConverter implements TextConverter {
 
     @Override
     public String conversorLista(String texto) {
+        if (texto.contains("-")) {
+            texto = "<li>" + texto.replace("-", "") + "<li>";
+
+        }
 
         return texto;
+
+    }
+
+    public void verificaFimDaLista(String texto) {
 
     }
 
@@ -116,25 +124,74 @@ public class MarkdownToHtmlConverter implements TextConverter {
             Writer writer = new OutputStreamWriter(fluxoDeEntrada2);//transforma os bytes em caracteres
             BufferedWriter bwriter = new BufferedWriter(writer);//junta os caracteres emum buffer unico por linha
 
-
-            //bwriter.newLine();
+            int auxiliarLista = 0;
+            int outroAuxliarDaLista = 0;
+            boolean listaEmAndamento = false;
 
             String textoConvertido = "";
 
             String line = readFile.readLine();
 
             while (line != null) {
-                textoConvertido = conversorTitulo4(line);
-                textoConvertido = conversorTitulo3(textoConvertido);
-                textoConvertido = conversorTitulo2(textoConvertido);
-                textoConvertido = conversorTitulo1(textoConvertido);
-                textoConvertido = conversorItalicoENegrito(textoConvertido);
-                textoConvertido = conversorNegrito(textoConvertido);
-                textoConvertido = conversorItalico(textoConvertido);
-                textoConvertido = conversorLista(textoConvertido);
+
+                textoConvertido = line;
+                if (line.contains("####")) {
+                    textoConvertido = conversorTitulo4(textoConvertido);
+
+                }
+                if (line.contains("###")) {
+                    textoConvertido = conversorTitulo3(textoConvertido);
+
+                }
+                if (line.contains("##")) {
+
+                    textoConvertido = conversorTitulo2(textoConvertido);
+                }
+                if (line.contains("#")) {
+
+                    textoConvertido = conversorTitulo1(textoConvertido);
+                }
+                if (line.contains("*")) {
+
+                    textoConvertido = conversorItalicoENegrito(textoConvertido);
+                }
+                if (line.contains("**")) {
+
+                    textoConvertido = conversorNegrito(textoConvertido);
+                }
+                if (line.contains("*")) {
+                    textoConvertido = conversorItalico(textoConvertido);
+
+                }
+
+                if (line.contains("-")) {
+
+                    textoConvertido = conversorLista(textoConvertido);
+
+                    if (auxiliarLista == 0) {
+                        bwriter.write("<ul>");
+                        bwriter.newLine();
+                        auxiliarLista = 1;
+                        listaEmAndamento = true;
+
+                    }
+                } else {
+                    auxiliarLista = 0;
+
+
+                }
+
+                if (listaEmAndamento) {
+                    if (auxiliarLista == 0) {
+                        bwriter.write("<ul>");
+                        bwriter.newLine();
+                        listaEmAndamento = false;
+                    }
+                }
+
+
                 System.out.printf(textoConvertido);
 
-                //textoConvertido = textoConvertido + "<br>";
                 bwriter.write(textoConvertido);
                 bwriter.newLine();
 
@@ -143,7 +200,8 @@ public class MarkdownToHtmlConverter implements TextConverter {
             readFile.close();
             bwriter.close();
 
-        } catch (Exception exception) {
+        } catch (
+                Exception exception) {
             throw new IOException("Arquivo nao encontrado");
         }
 
